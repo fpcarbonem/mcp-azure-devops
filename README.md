@@ -75,6 +75,21 @@ mcp dev src/mcp_azure_devops/server.py
 mcp install src/mcp_azure_devops/server.py --name "Azure DevOps Assistant"
 ```
 
+### Deploying to Railway
+
+When deploying on [Railway](https://railway.app/), the platform assigns a port
+via the `PORT` environment variable. The server automatically uses this value.
+Ensure the host is accessible by setting `FASTMCP_HOST` to `0.0.0.0`.
+
+Example start command:
+
+```bash
+FASTMCP_HOST=0.0.0.0 PORT=$PORT mcp-azure-devops --transport sse
+```
+
+This runs the server over HTTP using SSE so it can receive requests from the
+internet.
+
 ## Usage Examples
 
 ### Query Work Items
