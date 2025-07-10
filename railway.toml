@@ -7,4 +7,4 @@ startCommand = "python src/mcp_azure_devops/server.py"
 
 [env]
 FASTMCP_HOST = "0.0.0.0"
-PORT = "8080"
+FASTMCP_PORT = "8080"
