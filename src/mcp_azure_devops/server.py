@@ -14,13 +14,6 @@ from mcp_azure_devops.utils import register_all_prompts
 # Create a FastMCP server instance with a name
 mcp = FastMCP("Azure DevOps")
 
-# Adjust host and port when deployed on platforms like Railway
-if port := os.environ.get("PORT"):
-    # Railway provides the desired port in the PORT env var
-    mcp.settings.port = int(port)
-    # Bind to all interfaces if the host has not been overridden
-    mcp.settings.host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
-
 # Register all features
 register_all(mcp)
 register_all_prompts(mcp)
@@ -29,12 +22,38 @@ def main():
     """Entry point for the command-line script."""
     parser = argparse.ArgumentParser(
         description="Run the Azure DevOps MCP server")
-    # Add more command-line arguments as needed
+    parser.add_argument("--transport", default="stdio", 
+                       choices=["stdio", "sse", "http"],
+                       help="Transport method to use")
+    parser.add_argument("--host", default="localhost",
+                       help="Host to bind to")
+    parser.add_argument("--port", type=int, default=8000,
+                       help="Port to bind to")
     
-    parser.parse_args()  # Store args if needed later
+    args = parser.parse_args()
     
-    # Start the server
-    mcp.run()
+    # Check if running on Railway (or similar cloud platform)
+    if railway_port := os.environ.get("PORT"):
+        # Railway deployment - override with environment settings
+        host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
+        port = int(railway_port)
+        transport = "sse"  # Use SSE for Railway
+        print(f"Detected Railway deployment - using SSE transport on {host}:{port}")
+    else:
+        # Use command line arguments or defaults
+        host = args.host
+        port = args.port
+        transport = args.transport
+        print(f"Local development - using {transport} transport")
+    
+    # Start the server with appropriate transport
+    if transport == "sse":
+        mcp.run(transport="sse", host=host, port=port)
+    elif transport == "http":
+        mcp.run(transport="http", host=host, port=port)
+    else:
+        # stdio transport (default for local development)
+        mcp.run()
 
 if __name__ == "__main__":
     main()
