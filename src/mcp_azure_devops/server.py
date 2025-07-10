@@ -1,4 +1,4 @@
-"""
+python"""
 Azure DevOps MCP Server
 
 A simple MCP server that exposes Azure DevOps capabilities.
@@ -19,18 +19,9 @@ register_all_prompts(mcp)
 app = mcp.app if hasattr(mcp, 'app') else mcp
 
 def main():
-    """Entry point for the command-line script."""
-    import os
-    
-    # Check if running on Railway
-    if os.environ.get("PORT"):
-        # Railway deployment - use SSE transport
-        print(f"Detected Railway deployment - using SSE transport on port {os.environ.get('PORT')}")
-        mcp.run(transport="sse")
-    else:
-        # Local development - use stdio transport
-        print("Starting MCP server for local development with stdio transport")
-        mcp.run()
+    """Entry point for the command-line script - only for local development."""
+    print("Local development mode")
+    mcp.run()
 
 if __name__ == "__main__":
     main()
