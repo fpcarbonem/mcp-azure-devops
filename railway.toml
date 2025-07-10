@@ -1,8 +1,9 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "pip install -e ."
 
 [deploy]
-startCommand = "python -m mcp_azure_devops.server"
+startCommand = "python src/mcp_azure_devops/server.py"
 
 [env]
 FASTMCP_HOST = "0.0.0.0"
