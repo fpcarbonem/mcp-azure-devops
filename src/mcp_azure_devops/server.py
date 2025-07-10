@@ -26,15 +26,29 @@ register_all(mcp)
 register_all_prompts(mcp)
 
 def main():
-    """Entry point for the command-line script."""
-    parser = argparse.ArgumentParser(
-        description="Run the Azure DevOps MCP server")
-    # Add more command-line arguments as needed
+    import argparse
+    import os
     
-    parser.parse_args()  # Store args if needed later
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--transport", default="stdio")
+    parser.add_argument("--host", default="localhost")
+    parser.add_argument("--port", type=int, default=8000)
+    args = parser.parse_args()
     
-    # Start the server
-    mcp.run()
+    # Override with Railway environment variables if present
+    if os.getenv("PORT"):
+        host = os.getenv("FASTMCP_HOST", "0.0.0.0")
+        port = int(os.getenv("PORT"))
+        transport = "sse"
+    else:
+        host = args.host
+        port = args.port
+        transport = args.transport
+    
+    if transport == "sse":
+        mcp.run(transport=transport, host=host, port=port)
+    else:
+        mcp.run(transport=transport)
 
 if __name__ == "__main__":
-    main()
+    main()  # Keep this line unchanged
