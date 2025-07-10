@@ -22,21 +22,16 @@ def main():
     """Entry point for the command-line script."""
     import os
     
-    # Check if running on Railway
     if railway_port := os.environ.get("PORT"):
-        # Railway deployment
         host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
         port = int(railway_port)
         
-        print(f"Railway deployment - binding to {host}:{port}")
+        print(f"Railway deployment - starting server on {host}:{port}")
         
-        # Set environment variables that FastMCP/Uvicorn will use
-        os.environ["UVICORN_HOST"] = host
-        os.environ["UVICORN_PORT"] = str(port)
-        
-        mcp.run(transport="sse")
+        # Run Uvicorn directly with FastMCP's app
+        import uvicorn
+        uvicorn.run(mcp.app, host=host, port=port, log_level="info")
     else:
-        # Local development
         print("Local development mode")
         mcp.run()
 
