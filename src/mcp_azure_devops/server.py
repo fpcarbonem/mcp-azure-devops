@@ -23,11 +23,17 @@ print("Prompts registered")
 
 def main():
     """Entry point for the command-line script."""
-    port = int(os.environ.get("PORT", 8080))
+    # Prefer the FastMCP specific port if provided, otherwise fall back to the
+    # generic PORT variable which some platforms (like Railway) populate.
+    port = int(os.environ.get("FASTMCP_PORT", os.environ.get("PORT", 8080)))
     host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
-    
+
     print(f"Starting FastMCP server on {host}:{port}")
-    
+
+    # Ensure the FastMCP instance uses the expected host/port
+    mcp.settings.host = host
+    mcp.settings.port = port
+
     # Let FastMCP handle the server itself
     mcp.run(transport="sse")
 
