@@ -23,13 +23,21 @@ def main():
     import os
     
     # Check if running on Railway
-    if os.environ.get("PORT"):
-        # Railway deployment - use SSE transport
-        print(f"Detected Railway deployment - using SSE transport on port {os.environ.get('PORT')}")
+    if railway_port := os.environ.get("PORT"):
+        # Railway deployment
+        host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
+        port = int(railway_port)
+        
+        print(f"Railway deployment - binding to {host}:{port}")
+        
+        # Set environment variables that FastMCP/Uvicorn will use
+        os.environ["UVICORN_HOST"] = host
+        os.environ["UVICORN_PORT"] = str(port)
+        
         mcp.run(transport="sse")
     else:
-        # Local development - use stdio transport
-        print("Starting MCP server for local development with stdio transport")
+        # Local development
+        print("Local development mode")
         mcp.run()
 
 if __name__ == "__main__":
