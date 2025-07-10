@@ -2,10 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "mcp-azure-devops"
+startCommand = "python -m mcp_azure_devops.server"
 
 [env]
 FASTMCP_HOST = "0.0.0.0"
-
-[app]
-port = "$PORT"
