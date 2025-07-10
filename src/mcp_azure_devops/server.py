@@ -22,17 +22,31 @@ def main():
     """Entry point for the command-line script."""
     import os
     
+    # Set environment variables BEFORE any FastMCP operations
     if railway_port := os.environ.get("PORT"):
         host = os.environ.get("FASTMCP_HOST", "0.0.0.0")
         port = int(railway_port)
         
-        print(f"Railway deployment - starting server on {host}:{port}")
+        print(f"Railway deployment - port {port}")
         
-        # Run Uvicorn directly with FastMCP's app
-        import uvicorn
-        uvicorn.run(mcp.app, host=host, port=port, log_level="info")
+        # Set multiple environment variables that different systems might read
+        env_vars = {
+            "UVICORN_HOST": host,
+            "UVICORN_PORT": str(port),
+            "HOST": host,
+            "PORT": str(port),
+            "FASTMCP_HOST": host,
+            "FASTMCP_PORT": str(port)
+        }
+        
+        for key, value in env_vars.items():
+            os.environ[key] = value
+            print(f"Set {key}={value}")
+    
+    # Always call mcp.run the same way
+    if os.environ.get("PORT"):
+        mcp.run(transport="sse")
     else:
-        print("Local development mode")
         mcp.run()
 
 if __name__ == "__main__":
