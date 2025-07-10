@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "mcp-azure-devops"
+startCommand = "pip install -e . && mcp-azure-devops"
 
 [env]
 FASTMCP_HOST = "0.0.0.0"
